@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:optiqos/pages/home.dart';
+
+import '../utils/utils.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -17,7 +20,7 @@ class _SignUpState extends State<SignUp> {
       body: Stack(
         children: [
           Image.asset(
-            'assets/LOGIN.png',
+            'assets/bg.png',
             fit: BoxFit.cover,
             height: double.maxFinite,
             width: double.maxFinite,
@@ -95,12 +98,20 @@ class _SignUpState extends State<SignUp> {
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white),
-                      onPressed: () {
-                        Navigator.push(
+                      onPressed: () async {
+                        Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
                               builder: (context) => Home(),
-                            ));
+                            ),
+                            (route) => false);
+                        await FirebaseAuth.instance
+                            .createUserWithEmailAndPassword(
+                                email: email.text, password: password.text);
+                        Utils.USER_NOW =
+                            FirebaseAuth.instance.currentUser!.email! ?? '';
+
+                        ///
                       },
                       child: Text(
                         'Masuk',

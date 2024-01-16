@@ -1,15 +1,23 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:optiqos/pages/about.dart';
+import 'package:optiqos/pages/central_office_maps.dart';
+import 'package:optiqos/pages/signin.dart';
+import 'package:optiqos/pages/spm_calculator.dart';
+
+import '../utils/utils.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // print('USER NOW : ${FirebaseAuth.instance.currentUser!.email}');
     return Scaffold(
       body: Stack(
         children: [
           Image.asset(
-            'assets/LOGIN.png',
+            'assets/bg.png',
             fit: BoxFit.cover,
             height: double.maxFinite,
             width: double.maxFinite,
@@ -32,10 +40,20 @@ class Home extends StatelessWidget {
                               'assets/LOGO.png',
                               height: 50,
                             ),
-                            Image.asset(
-                              'assets/menu.png',
-                              height: 50,
-                            ),
+                            InkWell(
+                                onTap: () {
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SignIn(),
+                                      ),
+                                      (route) => false);
+                                },
+                                child: Icon(
+                                  Icons.logout_rounded,
+                                  size: 50,
+                                  color: Colors.white,
+                                )),
                           ],
                         ),
                       )),
@@ -60,7 +78,13 @@ class Home extends StatelessWidget {
                                   height: 10,
                                 ),
                                 InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => SPMCalculator(),
+                                        ));
+                                  },
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
                                     child: Image.asset(
@@ -87,7 +111,14 @@ class Home extends StatelessWidget {
                                   height: 10,
                                 ),
                                 InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              CentralOfficeMaps(),
+                                        ));
+                                  },
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
                                     child: Image.asset(
@@ -117,7 +148,7 @@ class Home extends StatelessWidget {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => Home(),
+                                          builder: (context) => About(),
                                         ));
                                   },
                                   child: Text(

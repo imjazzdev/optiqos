@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "960320979847",
+    "project_id": "optiqos-b651c",
+    "storage_bucket": "optiqos-b651c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960320979847:android:ae434d7b1b333bbca88922",
+        "android_client_info": {
+          "package_name": "com.example.optiqos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIVgYqwp1O-ICTidqCkkUXRDVmIP7zDis"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

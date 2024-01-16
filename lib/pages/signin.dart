@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:optiqos/pages/admin_home.dart';
 import 'package:optiqos/pages/home.dart';
 import 'package:optiqos/pages/signup.dart';
+
+import '../utils/utils.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -18,7 +22,7 @@ class _SignInState extends State<SignIn> {
       body: Stack(
         children: [
           Image.asset(
-            'assets/LOGIN.png',
+            'assets/bg.png',
             fit: BoxFit.cover,
             height: double.maxFinite,
             width: double.maxFinite,
@@ -89,12 +93,69 @@ class _SignInState extends State<SignIn> {
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Home(),
-                            ));
+                      onPressed: () async {
+                        try {
+                          if (email.text == 'admin@gmail.com' &&
+                              password.text == 'admin') {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AdminHome(),
+                                ),
+                                (route) => false);
+                          } else {
+                            await FirebaseAuth.instance
+                                .signInWithEmailAndPassword(
+                                    email: email.text, password: password.text);
+
+                            Utils.USER_NOW =
+                                FirebaseAuth.instance.currentUser!.email! ?? '';
+
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Home(),
+                                ),
+                                (route) => false);
+                          }
+
+                          // ignore: use_build_context_synchronously
+                        } on FirebaseAuthException catch (e) {
+                          if (e.code == 'wrong-password') {
+                            setState(() {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content:
+                                    Text('Email & password salah, coba lagi'),
+                                backgroundColor: Colors.orange.shade400,
+                              ));
+
+                              email.clear();
+                              password.clear();
+                            });
+                          } else if (e.code == 'user-not-found') {
+                            setState(() {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text('User tidak ditemukan'),
+                                backgroundColor: Colors.orange.shade400,
+                              ));
+
+                              email.clear();
+                              password.clear();
+                            });
+                          }
+                          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          //   content: Text(e.toString()),
+                          //   backgroundColor: Colors.orange.shade400,
+                          // ));
+                        }
+                        // Navigator.pushAndRemoveUntil(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //       builder: (context) => Home(),
+                        //     ),
+                        //     (route) => false);
                       },
                       child: Text(
                         'Masuk',

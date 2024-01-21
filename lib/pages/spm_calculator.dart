@@ -26,6 +26,7 @@ class _SPMCalculatorState extends State<SPMCalculator> {
   var valuePerformance;
   var valueMaintenance;
   var valueSPM;
+  var value_quality_of_service;
 
   void hitungPerformance(double pocketLoss, throughput, latency, jitter) {
     valuePerformance = (pocketLoss + throughput + latency + jitter) * 0.10;
@@ -39,6 +40,14 @@ class _SPMCalculatorState extends State<SPMCalculator> {
     valueSPM = (double.parse(availability.text) * 0.8) +
         (valuePerformance * 0.1) +
         (valueMaintenance * 0.1);
+
+    if (valueSPM < 90.0) {
+      value_quality_of_service = 'Bad';
+    } else if (valueSPM > 90.0 && valueSPM < 100.0) {
+      value_quality_of_service = 'Good';
+    } else {
+      value_quality_of_service = 'Good';
+    }
   }
 
   @override
@@ -107,6 +116,7 @@ class _SPMCalculatorState extends State<SPMCalculator> {
                               flex: 4,
                               child: TextField(
                                 controller: pocketLoss,
+                                keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
                                     filled: true, fillColor: Colors.white),
                               ))
@@ -130,6 +140,7 @@ class _SPMCalculatorState extends State<SPMCalculator> {
                           Expanded(
                               flex: 4,
                               child: TextField(
+                                keyboardType: TextInputType.number,
                                 controller: throughput,
                                 decoration: InputDecoration(
                                     filled: true, fillColor: Colors.white),
@@ -155,6 +166,7 @@ class _SPMCalculatorState extends State<SPMCalculator> {
                               flex: 4,
                               child: TextField(
                                 controller: latency,
+                                keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
                                     filled: true, fillColor: Colors.white),
                               ))
@@ -179,6 +191,7 @@ class _SPMCalculatorState extends State<SPMCalculator> {
                               flex: 4,
                               child: TextField(
                                 controller: jitter,
+                                keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
                                     filled: true, fillColor: Colors.white),
                               ))
@@ -220,6 +233,7 @@ class _SPMCalculatorState extends State<SPMCalculator> {
                               flex: 4,
                               child: TextField(
                                 controller: preventiveMain,
+                                keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
                                     filled: true, fillColor: Colors.white),
                               ))
@@ -244,6 +258,7 @@ class _SPMCalculatorState extends State<SPMCalculator> {
                               flex: 4,
                               child: TextField(
                                 controller: maintenance,
+                                keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
                                     filled: true, fillColor: Colors.white),
                               ))
@@ -275,6 +290,7 @@ class _SPMCalculatorState extends State<SPMCalculator> {
                             flex: 5,
                             child: TextField(
                               controller: availability,
+                              keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                   filled: true, fillColor: Colors.white),
                             ))
@@ -301,6 +317,7 @@ class _SPMCalculatorState extends State<SPMCalculator> {
                             flex: 5,
                             child: TextField(
                               controller: capacity,
+                              keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                   filled: true, fillColor: Colors.white),
                             ))
@@ -327,6 +344,7 @@ class _SPMCalculatorState extends State<SPMCalculator> {
                             flex: 5,
                             child: TextField(
                               controller: ber,
+                              keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                   filled: true, fillColor: Colors.white),
                             ))
@@ -523,7 +541,6 @@ class _SPMCalculatorState extends State<SPMCalculator> {
         double.parse(throughput.text),
         double.parse(latency.text),
         double.parse(jitter.text));
-
     final doc = FirebaseFirestore.instance
         .collection('DATA')
         .doc(DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now()).toString());
@@ -534,7 +551,7 @@ class _SPMCalculatorState extends State<SPMCalculator> {
         capacity: capacity.text,
         ber: ber.text,
         user: FirebaseAuth.instance.currentUser!.email.toString(),
-        quality_of_service: 'Good',
+        quality_of_service: value_quality_of_service,
         datetime:
             DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now()).toString());
     final json = data.toJson();

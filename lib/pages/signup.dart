@@ -67,13 +67,20 @@ class _SignUpState extends State<SignUp> {
                 SizedBox(
                   height: 20,
                 ),
-                TextField(
+                TextFormField(
                   controller: password,
+                  validator: (value) {
+                    if (!(value!.length < 8) && value.isNotEmpty) {
+                      return 'Maksimal 8 karakter';
+                    }
+                    return null;
+                  },
                   decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(),
-                      labelText: 'Password'),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(),
+                    labelText: 'Password',
+                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.all(10),
@@ -99,17 +106,50 @@ class _SignUpState extends State<SignUp> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white),
                       onPressed: () async {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Home(),
-                            ),
-                            (route) => false);
-                        await FirebaseAuth.instance
-                            .createUserWithEmailAndPassword(
-                                email: email.text, password: password.text);
-                        Utils.USER_NOW =
-                            FirebaseAuth.instance.currentUser!.email! ?? '';
+                        try {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Home(),
+                              ),
+                              (route) => false);
+
+                          await FirebaseAuth.instance
+                              .createUserWithEmailAndPassword(
+                                  email: email.text, password: password.text);
+
+                          Utils.USER_NOW =
+                              FirebaseAuth.instance.currentUser!.email! ?? '';
+                        } on FirebaseAuthException catch (e) {
+                          if (e.code == 'wrong-password') {
+                            setState(() {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content:
+                                    Text('Email & password salah, coba lagi'),
+                                backgroundColor: Colors.orange.shade400,
+                              ));
+
+                              email.clear();
+                              password.clear();
+                            });
+                          } else if (e.code == 'user-not-found') {
+                            setState(() {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text('User tidak ditemukan'),
+                                backgroundColor: Colors.orange.shade400,
+                              ));
+
+                              email.clear();
+                              password.clear();
+                            });
+                          }
+                          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          //   content: Text(e.toString()),
+                          //   backgroundColor: Colors.orange.shade400,
+                          // ));
+                        }
 
                         ///
                       },

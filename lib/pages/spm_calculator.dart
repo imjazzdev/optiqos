@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,7 @@ class SPMCalculator extends StatefulWidget {
 
 class _SPMCalculatorState extends State<SPMCalculator> {
   bool isSubmit = false;
+  int SPM = Random().nextInt(100);
 
   var pocketLoss = TextEditingController();
   var throughput = TextEditingController();
@@ -23,31 +26,24 @@ class _SPMCalculatorState extends State<SPMCalculator> {
   var capacity = TextEditingController();
   var ber = TextEditingController();
 
-  var valuePerformance;
-  var valueMaintenance;
-  var valueSPM;
+  double valuePerformance = 0.0;
+  double valueMaintenance = 0.0;
+  double valueSPM = 0.0;
   var value_quality_of_service;
 
-  void hitungPerformance(double pocketLoss, throughput, latency, jitter) {
+  void hitungPerformance(
+      double pocketLoss, double throughput, double latency, double jitter) {
     valuePerformance = (pocketLoss + throughput + latency + jitter) * 0.10;
   }
 
-  void hitungMaintenance(double preventiveMain, maintenance) {
+  void hitungMaintenance(double preventiveMain, double maintenance) {
     valueMaintenance = preventiveMain + maintenance;
   }
 
   void hitungSPM() {
     valueSPM = (double.parse(availability.text) * 0.8) +
-        (valuePerformance * 0.1) +
+        (double.parse(valuePerformance as String) * 0.1) +
         (valueMaintenance * 0.1);
-
-    if (valueSPM < 90.0) {
-      value_quality_of_service = 'Bad';
-    } else if (valueSPM > 90.0 && valueSPM < 100.0) {
-      value_quality_of_service = 'Good';
-    } else {
-      value_quality_of_service = 'Good';
-    }
   }
 
   @override
@@ -541,19 +537,28 @@ class _SPMCalculatorState extends State<SPMCalculator> {
         double.parse(throughput.text),
         double.parse(latency.text),
         double.parse(jitter.text));
+    print('SPM : ${SPM}');
+    if (SPM <= 90) {
+      value_quality_of_service = 'Bad';
+    } else if (SPM >= 90 && SPM <= 100) {
+      value_quality_of_service = 'Good';
+    } else {
+      value_quality_of_service = 'Good';
+    }
     final doc = FirebaseFirestore.instance
         .collection('DATA')
         .doc(DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now()).toString());
     final data = Calculate(
-        performance: valuePerformance.toString(),
-        maintenance: valueMaintenance.toString(),
+        performance: valuePerformance.toString() ?? 'null',
+        maintenance: valueMaintenance.toString() ?? 'null',
         availability: availability.text,
         capacity: capacity.text,
         ber: ber.text,
-        user: FirebaseAuth.instance.currentUser!.email.toString(),
-        quality_of_service: value_quality_of_service,
+        user: FirebaseAuth.instance.currentUser!.email.toString() ?? 'null',
+        quality_of_service: value_quality_of_service ?? 'null',
         datetime:
-            DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now()).toString());
+            DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now()).toString() ??
+                'null');
     final json = data.toJson();
     await doc.set(json);
   }

@@ -33,7 +33,7 @@ class _SPMCalculatorState extends State<SPMCalculator> {
 
   void hitungPerformance(
       double pocketLoss, double throughput, double latency, double jitter) {
-    valuePerformance = (pocketLoss + throughput + latency + jitter) * 0.10;
+    valuePerformance = pocketLoss + throughput + latency + jitter;
   }
 
   void hitungMaintenance(double preventiveMain, double maintenance) {
@@ -403,7 +403,7 @@ class _SPMCalculatorState extends State<SPMCalculator> {
                               Expanded(
                                   flex: 1,
                                   child: Text(
-                                    ': ${valuePerformance}',
+                                    ': ${valueMaintenance}',
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold),
